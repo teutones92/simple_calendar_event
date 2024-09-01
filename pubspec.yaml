@@ -1,0 +1,31 @@
+name: simple_calendar_event
+description: "A simple Flutter plugin for managing device calendar events."
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ^3.5.1
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  
+  plugin:
+    platforms:
+      android:
+        package: com.teutondev.simple_calendar_event
+        pluginClass: SimpleCalendarEventPlugin
+
