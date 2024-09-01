@@ -63,7 +63,41 @@ int? eventId = await SimpleCalendarEvent.addEventToCalendar(
 ```dart
 bool success = await SimpleCalendarEvent.removeEvent(123);
 ```
+## Additional Information
 
+### Classes
+
+#### CalendarModel
+
+Represents a calendar with the following properties:
+
+- `id`: The ID of the calendar.
+- `name`: The name of the calendar.
+- `accountName`: The account name associated with the calendar.
+- `ownerName`: The owner of the calendar.
+- `displayName`: The display name of the calendar.
+
+#### CalendarEventModel
+
+Represents an event with the following properties:
+
+- `id`: The ID of the event (optional).
+- `title`: The title of the event.
+- `description`: The description of the event.
+- `location`: The location of the event.
+- `startTime`: The start time of the event.
+- `endTime`: The end time of the event.
+- `timeZone`: The time zone for the event.
+- `calendarId`: The ID of the calendar where the event will be added.
+
+### Permissions
+
+Ensure that you include the following permissions in your AndroidManifest.xml file:
+
+```xml
+<uses-permission android:name="android.permission.READ_CALENDAR"/>
+<uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+```
 ## Contributing
 
 If you'd like to contribute to this project, please follow these steps:
