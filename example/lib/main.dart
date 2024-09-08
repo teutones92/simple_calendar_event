@@ -30,12 +30,37 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: TextButton(
-              onPressed: () {
-                test();
-              },
-              child: const Text('Test')),
+        body: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.blue,
+                    ),
+                    onPressed: () {
+                      test();
+                    },
+                    child: const Text('Add Event')),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red,
+                    ),
+                    onPressed: () {
+                      test();
+                    },
+                    child: const Text('Remove Event')),
+              ),
+            ],
+          ),
         ),
       ),
     );
