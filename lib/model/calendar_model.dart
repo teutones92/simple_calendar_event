@@ -22,4 +22,14 @@ class CalendarModel {
       displayName: json.cast<String, dynamic>()['displayName'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'accountName': accountName,
+      'ownerName': ownerName,
+      'displayName': displayName,
+    };
+  }
 }

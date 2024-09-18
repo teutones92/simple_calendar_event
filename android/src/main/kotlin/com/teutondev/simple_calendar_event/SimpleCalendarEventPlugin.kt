@@ -11,6 +11,8 @@ import io.flutter.plugin.common.MethodChannel
 
 data class CalendarData(val id: Int, val name: String, val accountName: String, val ownerName: String, val displayName: String)
 
+data class EventData(val id: Int, val title: String, val description: String, val location: String, val startTime: Long, val endTime: Long, val timeZone: String, val calendarId: Int)
+
 fun CalendarData.toMap(): Map<String, Any?> {
     return mapOf(
         "id" to id,
@@ -18,6 +20,19 @@ fun CalendarData.toMap(): Map<String, Any?> {
         "accountName" to accountName,
         "ownerName" to ownerName,
         "displayName" to displayName
+    )
+}
+
+fun EventData.toMap(): Map<String, Any?> {
+    return mapOf(
+        "id" to id,
+        "title" to title,
+        "description" to description,
+        "location" to location,
+        "startTime" to startTime,
+        "endTime" to endTime,
+        "timeZone" to timeZone,
+        "calendarId" to calendarId
     )
 }
 
@@ -36,6 +51,15 @@ class SimpleCalendarEventPlugin : FlutterPlugin, MethodChannel.MethodCallHandler
             "getCalendars" -> {
                 val calendars = getCalendars()
                 result.success(calendars)
+            }
+            "getEvents" -> {
+                val calendarId = call.argument<Int>("calendarId")
+                if (calendarId != null) {
+                    val events = getEvents(calendarId)
+                    result.success(events)
+                } else {
+                    result.error("INVALID_ARGUMENT", "Calendar ID is null", null)
+                }
             }
             "addEventToCalendar" -> {
                 val calendarId = call.argument<Int>("calendarId")
@@ -96,6 +120,57 @@ class SimpleCalendarEventPlugin : FlutterPlugin, MethodChannel.MethodCallHandler
                         accountName = it.getString(accountNameColumn),
                         ownerName = it.getString(ownerNameColumn),
                         displayName = it.getString(displayNameColumn)
+                    )
+                }.toList()
+        } ?: emptyList()
+    }
+
+    private fun getEvents(calendarId: Int): List<Map<String, Any?>> {
+        return try {
+            getEventsInternal(calendarId).map { it.toMap() }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    private fun getEventsInternal(calendarId: Int): List<EventData>{
+        val projection = arrayOf(
+            CalendarContract.Events._ID,
+            CalendarContract.Events.TITLE,
+            CalendarContract.Events.DESCRIPTION,
+            CalendarContract.Events.EVENT_LOCATION,
+            CalendarContract.Events.DTSTART,
+            CalendarContract.Events.DTEND,
+            CalendarContract.Events.EVENT_TIMEZONE,
+            CalendarContract.Events.CALENDAR_ID
+        )
+        val uri = CalendarContract.Events.CONTENT_URI
+        val selection = "${CalendarContract.Events.CALENDAR_ID} = ?"
+        val selectionArgs = arrayOf(calendarId.toString())
+        val cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
+
+        return cursor?.use {
+            val idColumn = it.getColumnIndexOrThrow(CalendarContract.Events._ID)
+            val titleColumn = it.getColumnIndexOrThrow(CalendarContract.Events.TITLE)
+            val descriptionColumn = it.getColumnIndexOrThrow(CalendarContract.Events.DESCRIPTION)
+            val locationColumn = it.getColumnIndexOrThrow(CalendarContract.Events.EVENT_LOCATION)
+            val startTimeColumn = it.getColumnIndexOrThrow(CalendarContract.Events.DTSTART)
+            val endTimeColumn = it.getColumnIndexOrThrow(CalendarContract.Events.DTEND)
+            val timeZoneColumn = it.getColumnIndexOrThrow(CalendarContract.Events.EVENT_TIMEZONE)
+            val calendarIdColumn = it.getColumnIndexOrThrow(CalendarContract.Events.CALENDAR_ID)
+
+            generateSequence { if (it.moveToNext()) it else null }
+                .map {
+                    EventData(
+                        id = it.getInt(idColumn),
+                        title = it.getString(titleColumn),
+                        description = it.getString(descriptionColumn),
+                        location = it.getString(locationColumn),
+                        startTime = it.getLong(startTimeColumn),
+                        endTime = it.getLong(endTimeColumn),
+                        timeZone = it.getString(timeZoneColumn),
+                        calendarId = it.getInt(calendarIdColumn)
                     )
                 }.toList()
         } ?: emptyList()
